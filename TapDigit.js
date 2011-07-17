@@ -171,16 +171,12 @@ TapDigit.Lexer = function () {
                 if (index >= length) {
                     ch = '<end>';
                 }
-                throw {
-                    message: 'Unexpected ' + ch + ' after the exponent sign'
-                };
+                throw SyntaxError('Unexpected ' + ch + ' after the exponent sign');
             }
         }
 
         if (number === '.') {
-            throw {
-                message: 'Expecting decimal digits after the dot sign'
-            };
+            throw SyntaxError('Expecting decimal digits after the dot sign');
         }
 
         return createToken(T.Number, number);
@@ -218,9 +214,7 @@ TapDigit.Lexer = function () {
         }
 
 
-        throw {
-            message: 'Unknown token from character ' + peekNextChar()
-        };
+        throw SyntaxError('Unknown token from character ' + peekNextChar());
     }
 
     function peek() {
@@ -286,9 +280,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (!matchOp(token, '(')) {
-            throw {
-                message: 'Expecting ( in a function call "' + name + '"'
-            };
+            throw SyntaxError('Expecting ( in a function call "' + name + '"');
         }
 
         token = lexer.peek();
@@ -298,9 +290,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (!matchOp(token, ')')) {
-            throw {
-                message: 'Expecting ) in a function call "' + name + '"'
-            };
+            throw SyntaxError('Expecting ) in a function call "' + name + '"');
         }
 
         return {
@@ -321,9 +311,7 @@ TapDigit.Parser = function () {
         token = lexer.peek();
 
         if (typeof token === 'undefined') {
-            throw {
-                message: 'Unexpected termination of expression'
-            };
+            throw SyntaxError('Unexpected termination of expression');
         }
 
         if (token.type === T.Identifier) {
@@ -349,18 +337,14 @@ TapDigit.Parser = function () {
             expr = parseAssignment();
             token = lexer.next();
             if (!matchOp(token, ')')) {
-                throw {
-                    message: 'Expecting )'
-                };
+                throw SyntaxError('Expecting )');
             }
             return {
                 'Expression': expr
             };
         }
 
-        throw {
-            message: 'Parse error, can not process token ' + token.value
-        };
+        throw SyntaxError('Parse error, can not process token ' + token.value);
     }
 
     // Unary ::= Primary |
@@ -469,9 +453,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (typeof token !== 'undefined') {
-            throw {
-                message: 'Unexpected token ' + token.value
-            };
+            throw SyntaxError('Unexpected token ' + token.value);
         }
 
         return {
