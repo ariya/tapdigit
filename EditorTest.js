@@ -26,7 +26,7 @@
 */
 
 /*global TapDigit:true */
-var lexer, highlightId;
+var lexer, cursor, highlightId;
 
 function highlight() {
     if (highlightId) {
@@ -36,7 +36,8 @@ function highlight() {
     highlightId = window.setTimeout(function () {
         var el, code, str,
             lexer, tokens, token, i,
-            text, html, str;
+            text, html, str,
+            selection, range;
 
         el = document.getElementById('input');
         if (el.onkeydown === null) {
@@ -97,11 +98,32 @@ function highlight() {
                 html += '</span>';
             }
 
-            str = input.innerHTML;
-            if (str !== html) {
+            // First-time initialization
+            if (typeof cursor === 'undefined') {
+
                 input.innerHTML = html;
+                cursor = code.length;
+
+                // Place the cursor at the end of input
+                range = document.createRange(),
+                range.selectNodeContents(input);
+                range.collapse(false);
+                selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                // Ensure we have the focus
+                input.focus();
+
+            } else {
+
+                // Replace the markup only if there is a change
+                str = input.innerHTML;
+                if (str !== html) {
+                    console.log(html);
+                    input.innerHTML = html;
+                }
             }
-            input.focus();
 
         } catch (e) {
             document.getElementById('tokens').innerText = JSON.stringify(e);
@@ -113,21 +135,4 @@ function highlight() {
 
 // Run once at the beginning
 highlight();
-
-// Place the cursor initially at the end of input
-(function() {
-    var input = document.getElementById('input'),
-        range = document.createRange(),
-        selection;
-
-    range.selectNodeContents(input);
-    range.collapse(false);
-
-    selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    // Ensure we have the focus
-    input.focus();
-})();
 
