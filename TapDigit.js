@@ -39,6 +39,7 @@ TapDigit.Lexer = function () {
     var expression = '',
         length = 0,
         index = 0,
+        marker = 0,
         T = TapDigit.Token;
 
     function peekNextChar() {
@@ -71,7 +72,9 @@ TapDigit.Lexer = function () {
     function createToken(type, value) {
         return {
             type: type,
-            value: value
+            value: value,
+            start: marker,
+            end: index - 1
         };
     }
 
@@ -196,6 +199,8 @@ TapDigit.Lexer = function () {
         if (index >= length) {
             return undefined;
         }
+
+        marker = index;
 
         token = scanNumber();
         if (typeof token !== 'undefined') {
