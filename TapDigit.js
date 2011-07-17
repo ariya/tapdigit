@@ -58,7 +58,7 @@ TapDigit.Lexer = function () {
     }
 
     function isWhiteSpace(ch) {
-        return (ch === '\u0009') || (ch === ' ');
+        return (ch === '\u0009') || (ch === ' ') || (ch === '\u00A0');
     }
 
     function isLetter(ch) {
