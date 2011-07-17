@@ -36,7 +36,7 @@ function highlight() {
     highlightId = window.setTimeout(function () {
         var el, code, str,
             lexer, tokens, token, i,
-            text, html;
+            text, html, str;
 
         el = document.getElementById('input');
         if (el.onkeydown === null) {
@@ -81,22 +81,26 @@ function highlight() {
             html = '';
             for (i = 0; i < tokens.length; i += 1) {
                 token = tokens[i];
+                str = '';
                 while (text.length < token.start) {
                     text += ' ';
-                    html += '&nbsp;';
+                    str += '&nbsp;';
+                }
+                if (str.length > 0) {
+                    html += '<span class="blank">';
+                    html += str;
+                    html += '</span>';
                 }
                 text += code.substring(token.start, token.end + 1);
-                if (token.type === TapDigit.Token.Identifier) {
-                    html += '<span class=identifier>';
-                } else if (token.type === TapDigit.Token.Number) {
-                    html += '<span class=number>';
-                } else {
-                    html += '<span>';
-                }
+                html += '<span class="' + token.type + '">';
                 html += code.substring(token.start, token.end + 1);
                 html += '</span>';
             }
-            input.innerHTML = html;
+
+            str = input.innerHTML;
+            if (str !== html) {
+                input.innerHTML = html;
+            }
             input.focus();
 
         } catch (e) {
