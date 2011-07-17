@@ -229,6 +229,8 @@ TapDigit.Lexer = function () {
         idx = index;
         try {
             token = next();
+            delete token.start;
+            delete token.end;
         } catch (e) {
             token = undefined;
         }
