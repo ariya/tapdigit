@@ -163,6 +163,13 @@ function highlight() {
     }, 345);
 }
 
+// Check for contentEditable support
+if (document.getElementById('input').contentEditable !== 'true') {
+    document.body.innerHTML = 'Syntax highlighting is not available. ' +
+        'This browser does not support contentEditable.';
+    highlight = function () {};
+}
+
 // Run once at the beginning
 highlight();
 
