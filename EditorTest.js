@@ -25,159 +25,129 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*global TapDigit:true */
-var lexer, cursor, highlightId;
+/*global TapDigit:true,document:true,window:true */
+var lexer;
 
-function highlight() {
-    if (highlightId) {
-        window.clearTimeout(highlightId);
+function syncCursor() {
+    var input, display, cursor, caretX, caretY, el;
+
+    input = document.getElementById('expr');
+    cursor = input.selectionStart;
+    display = document.getElementById('display');
+
+    if (display.childElementCount > cursor) {
+        el = display.childNodes[cursor];
+        if (el) {
+            caretX = el.offsetLeft;
+            caretY = el.offsetTop;
+            el = document.getElementById('cursor');
+            el.style.left = caretX + 'px';
+            el.style.top = caretY + 'px';
+        }
+    }
+}
+
+function syncText() {
+
+    var input, display, expr,
+        lexer, tokens, token, i, j,
+        text, html, str;
+
+    input = document.getElementById('expr');
+    expr = input.value;
+    display = document.getElementById('display');
+
+    try {
+        if (typeof lexer === 'undefined') {
+            lexer = new TapDigit.Lexer();
+        }
+        tokens = [];
+        lexer.reset(expr);
+        while (true) {
+            token = lexer.next();
+            if (typeof token === 'undefined') {
+                break;
+            }
+            tokens.push(token);
+        }
+    } catch (e) {
+        display.textContent = expr;
+        document.getElementById('tokens').textContent = e.toString();
+        return;
     }
 
-    highlightId = window.setTimeout(function () {
-        var input, expr, str,
-            lexer, tokens, token, i, j,
-            text, html,
-            selection, range, el;
 
-        input = document.getElementById('input');
-        if (input.onkeypress === null) {
-            input.onkeypress = highlight;
-        }
+    html = '<table width=200>\n';
+    for (i = 0; i < tokens.length; i += 1) {
+        token = tokens[i];
+        html += '<tr>';
+        html += '<td>';
+        html += token.type;
+        html += '</td>';
+        html += '<td align=center>';
+        html += token.value;
+        html += '</td>';
+        html += '</tr>';
+        html += '\n';
+    }
+    document.getElementById('tokens').innerHTML = html;
 
-        expr = input.textContent;
-
-        try {
-            if (typeof lexer === 'undefined') {
-                lexer = new TapDigit.Lexer();
-            }
-
-            tokens = [];
-            lexer.reset(expr);
-            while (true) {
-                token = lexer.next();
-                if (typeof token === 'undefined') {
-                    break;
-                }
-                tokens.push(token);
-            }
-
-            str = '<table width=200>\n';
-            for (i = 0; i < tokens.length; i += 1) {
-                token = tokens[i];
-                str += '<tr>';
-                str += '<td>';
-                str += token.type;
-                str += '</td>';
-                str += '<td align=center>';
-                str += token.value;
-                str += '</td>';
-                str += '</tr>';
-                str += '\n';
-            }
-            document.getElementById('tokens').innerHTML = str;
-
-            text = '';
-            html = '';
-            for (i = 0; i < tokens.length; i += 1) {
-                token = tokens[i];
-                while (text.length < token.start) {
-                    text += ' ';
-                    html += '<span class="blank">&nbsp;</span>';
-                }
-                str = expr.substring(token.start, token.end + 1);
-                text += str;
-                for (j = 0; j < str.length; j += 1) {
-                    html += '<span class="' + token.type + '">';
-                    html += str.charAt(j);
-                    html += '</span>';
-                }
-            }
-            while (text.length < expr.length) {
-                text += ' ';
+    text = '';
+    html = '';
+    for (i = 0; i < tokens.length; i += 1) {
+        token = tokens[i];
+        j = 0;
+        while (text.length < token.start) {
+            text += ' ';
+            if (j === 0) {
+                html += '<span class="blank"> </span>';
+            } else {
                 html += '<span class="blank">&nbsp;</span>';
             }
-
-            // First-time initialization
-            if (typeof cursor === 'undefined') {
-
-                input.innerHTML = html;
-                cursor = expr.length;
-
-                // Place the cursor at the end of input
-                range = document.createRange();
-                range.selectNodeContents(input);
-                range.collapse(false);
-                selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
-
-                // Ensure we have the focus
-                input.focus();
-
-            } else {
-
-
-                // Get cursor position relative to the main input element
-                cursor = -1;
-                selection = window.getSelection();
-                if (selection.rangeCount > 0) {
-                    range = selection.getRangeAt(0);
-                    el = range.startContainer.parentNode;
-                    if (el && el.parentNode === input) {
-                        cursor = range.startOffset - el.textContent.length;
-                        while (el) {
-                            cursor += el.textContent.length;
-                            el = el.previousElementSibling;
-                        }
-                    }
-                }
-
-                // Replace the markup only if there is a change
-                str = input.innerHTML;
-                if (str !== html) {
-
-                    input.innerHTML = html;
-
-                    // Restore cursor position
-                    if (cursor > 0) {
-                        range = document.createRange();
-                        if (input.childElementCount === cursor) {
-                            range.setStartAfter(input.childNodes[cursor - 1]);
-                        } else {
-                            range.setStartBefore(input.childNodes[cursor]);
-                        }
-                        selection = window.getSelection();
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
-                }
-            }
-
-        } catch (e) {
-            document.getElementById('tokens').textContent = JSON.stringify(e);
-            document.getElementById('tokens').textContent = e.toString();
+            j = 1;
         }
-        highlightId = undefined;
-    }, 345);
+        str = expr.substring(token.start, token.end + 1);
+        for (j = 0; j < str.length; j += 1) {
+            html += '<span class="' + token.type + '">';
+            html += str.charAt(j);
+            text += str.charAt(j);
+            html += '</span>';
+        }
+    }
+    while (text.length < expr.length) {
+        text += ' ';
+        html += '<span class="blank">&nbsp;</span>';
+    }
+
+    html += '<span class="cursor" id="cursor">&nbsp;</span>';
+    display.innerHTML = html;
+
+    syncCursor();
 }
 
-// Check for contentEditable support
-document.getElementById('input').contentEditable = true;
-if (document.getElementById('input').contentEditable !== 'true') {
-    document.body.innerHTML = 'Syntax highlighting is not available. ' +
-        'This browser does not support contentEditable.';
-    highlight = function () {};
-}
 
-// Check for W3C Selection/Range
-if (typeof window.getSelection !== 'function') {
-    document.body.innerHTML = 'Syntax highlighting is not available. ' +
-        'This browser does not W3C Selection/Range.';
-    highlight = function () {};
-}
+// Initialization
+(function() {
+    var input = document.getElementById('expr'),
+        expr = input.value;
 
-window.addEventListener('keypress', highlight, true);
+    input.focus();
+    input.setSelectionRange(expr.length, expr.length);
 
-// Run once at the beginning
-highlight();
+    // Always put back the focus on the proxy input
+    input.onblur = function () {
+        window.setTimeout(function () {
+            document.getElementById('expr').focus();
+        }, 0);
+    };
+
+    window.addEventListener('keydown', syncCursor);
+    window.addEventListener('keyup', syncText);
+
+    // Somehow Opera needs this
+    input.onkeydown = syncCursor;
+    input.onkeyup = syncText;
+
+    syncText();
+})();
 
