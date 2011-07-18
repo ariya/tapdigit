@@ -46,7 +46,7 @@ function highlight() {
             };
         }
 
-        expr = input.innerText;
+        expr = input.textContent;
 
         try {
             if (typeof lexer === 'undefined') {
@@ -126,9 +126,9 @@ function highlight() {
                     range = selection.getRangeAt(0);
                     el = range.startContainer.parentNode;
                     if (el && el.parentNode === input) {
-                        cursor = range.startOffset - el.innerText.length;
+                        cursor = range.startOffset - el.textContent.length;
                         while (el) {
-                            cursor += el.innerText.length;
+                            cursor += el.textContent.length;
                             el = el.previousElementSibling;
                         }
                     }
@@ -156,8 +156,8 @@ function highlight() {
             }
 
         } catch (e) {
-            document.getElementById('tokens').innerText = JSON.stringify(e);
-            document.getElementById('tokens').innerText = e.toString();
+            document.getElementById('tokens').textContent = JSON.stringify(e);
+            document.getElementById('tokens').textContent = e.toString();
         }
         highlightId = undefined;
     }, 345);
