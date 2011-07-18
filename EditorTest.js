@@ -176,7 +176,7 @@ if (typeof window.getSelection !== 'function') {
     highlight = function () {};
 }
 
-window.addEventListener('keypress', highlight);
+window.addEventListener('keypress', highlight, true);
 
 // Run once at the beginning
 highlight();
