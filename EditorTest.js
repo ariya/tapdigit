@@ -40,6 +40,10 @@ function highlight() {
             selection, range, el;
 
         input = document.getElementById('input');
+        if (input.onkeypress === null) {
+            input.onkeypress = highlight;
+        }
+
         expr = input.textContent;
 
         try {
