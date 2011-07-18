@@ -171,6 +171,13 @@ if (document.getElementById('input').contentEditable !== 'true') {
     highlight = function () {};
 }
 
+// Check for W3C Selection/Range
+if (typeof window.getSelection !== 'function') {
+    document.body.innerHTML = 'Syntax highlighting is not available. ' +
+        'This browser does not W3C Selection/Range.';
+    highlight = function () {};
+}
+
 // Run once at the beginning
 highlight();
 
