@@ -36,7 +36,7 @@ function highlight() {
     highlightId = window.setTimeout(function () {
         var input, expr, str,
             lexer, tokens, token, i, j,
-            text, html, str,
+            text, html,
             selection, range, el;
 
         input = document.getElementById('input');
@@ -106,7 +106,7 @@ function highlight() {
                 cursor = expr.length;
 
                 // Place the cursor at the end of input
-                range = document.createRange(),
+                range = document.createRange();
                 range.selectNodeContents(input);
                 range.collapse(false);
                 selection = window.getSelection();
