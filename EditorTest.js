@@ -34,19 +34,19 @@ function highlight() {
     }
 
     highlightId = window.setTimeout(function () {
-        var el, code, str,
+        var input, expr, str,
             lexer, tokens, token, i,
             text, html, str,
-            selection, range;
+            walker, selection, range, el;
 
-        el = document.getElementById('input');
-        if (el.onkeydown === null) {
-            el.onkeydown = function (e) {
+        input = document.getElementById('input');
+        if (input.onkeydown === null) {
+            input.onkeydown = function (e) {
                 highlight();
             };
         }
 
-        code = el.innerText;
+        expr = input.innerText;
 
         try {
             if (typeof lexer === 'undefined') {
@@ -54,7 +54,7 @@ function highlight() {
             }
 
             tokens = [];
-            lexer.reset(code);
+            lexer.reset(expr);
             while (true) {
                 token = lexer.next();
                 if (typeof token === 'undefined') {
@@ -92,9 +92,9 @@ function highlight() {
                     html += str;
                     html += '</span>';
                 }
-                text += code.substring(token.start, token.end + 1);
+                text += expr.substring(token.start, token.end + 1);
                 html += '<span class="' + token.type + '">';
-                html += code.substring(token.start, token.end + 1);
+                html += expr.substring(token.start, token.end + 1);
                 html += '</span>';
             }
 
@@ -102,7 +102,7 @@ function highlight() {
             if (typeof cursor === 'undefined') {
 
                 input.innerHTML = html;
-                cursor = code.length;
+                cursor = expr.length;
 
                 // Place the cursor at the end of input
                 range = document.createRange(),
@@ -117,10 +117,23 @@ function highlight() {
 
             } else {
 
+
+                // Get cursor position relative to the main input element
+                cursor = -1;
+                selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    range = selection.getRangeAt(0);
+                    el = range.startContainer.parentElement;
+                    cursor = range.startOffset - el.innerText.length;
+                    while (el) {
+                        cursor += el.innerText.length;
+                        el = el.previousElementSibling;
+                    }
+                }
+
                 // Replace the markup only if there is a change
                 str = input.innerHTML;
                 if (str !== html) {
-                    console.log(html);
                     input.innerHTML = html;
                 }
             }
