@@ -40,12 +40,6 @@ function highlight() {
             selection, range, el;
 
         input = document.getElementById('input');
-        if (input.onkeydown === null) {
-            input.onkeydown = function (e) {
-                highlight();
-            };
-        }
-
         expr = input.textContent;
 
         try {
@@ -177,6 +171,8 @@ if (typeof window.getSelection !== 'function') {
         'This browser does not W3C Selection/Range.';
     highlight = function () {};
 }
+
+window.addEventListener('keypress', highlight);
 
 // Run once at the beginning
 highlight();
