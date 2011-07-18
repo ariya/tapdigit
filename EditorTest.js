@@ -35,9 +35,9 @@ function highlight() {
 
     highlightId = window.setTimeout(function () {
         var input, expr, str,
-            lexer, tokens, token, i,
+            lexer, tokens, token, i, j,
             text, html, str,
-            walker, selection, range, el;
+            selection, range, el;
 
         input = document.getElementById('input');
         if (input.onkeydown === null) {
@@ -82,20 +82,21 @@ function highlight() {
             html = '';
             for (i = 0; i < tokens.length; i += 1) {
                 token = tokens[i];
-                str = '';
                 while (text.length < token.start) {
                     text += ' ';
-                    str += '&nbsp;';
+                    html += '<span class="blank">&nbsp;</span>';
                 }
-                if (str.length > 0) {
-                    html += '<span class="blank">';
-                    html += str;
+                str = expr.substring(token.start, token.end + 1);
+                text += str;
+                for (j = 0; j < str.length; j += 1) {
+                    html += '<span class="' + token.type + '">';
+                    html += str.charAt(j);
                     html += '</span>';
                 }
-                text += expr.substring(token.start, token.end + 1);
-                html += '<span class="' + token.type + '">';
-                html += expr.substring(token.start, token.end + 1);
-                html += '</span>';
+            }
+            while (text.length < expr.length) {
+                text += ' ';
+                html += '<span class="blank">&nbsp;</span>';
             }
 
             // First-time initialization
@@ -123,18 +124,34 @@ function highlight() {
                 selection = window.getSelection();
                 if (selection.rangeCount > 0) {
                     range = selection.getRangeAt(0);
-                    el = range.startContainer.parentElement;
-                    cursor = range.startOffset - el.innerText.length;
-                    while (el) {
-                        cursor += el.innerText.length;
-                        el = el.previousElementSibling;
+                    el = range.startContainer.parentNode;
+                    if (el && el.parentNode === input) {
+                        cursor = range.startOffset - el.innerText.length;
+                        while (el) {
+                            cursor += el.innerText.length;
+                            el = el.previousElementSibling;
+                        }
                     }
                 }
 
                 // Replace the markup only if there is a change
                 str = input.innerHTML;
                 if (str !== html) {
+
                     input.innerHTML = html;
+
+                    // Restore cursor position
+                    if (cursor > 0) {
+                        range = document.createRange();
+                        if (input.childElementCount === cursor) {
+                            range.setStartAfter(input.childNodes[cursor - 1]);
+                        } else {
+                            range.setStartBefore(input.childNodes[cursor]);
+                        }
+                        selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
                 }
             }
 
