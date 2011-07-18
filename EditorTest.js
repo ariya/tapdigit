@@ -164,6 +164,7 @@ function highlight() {
 }
 
 // Check for contentEditable support
+document.getElementById('input').contentEditable = true;
 if (document.getElementById('input').contentEditable !== 'true') {
     document.body.innerHTML = 'Syntax highlighting is not available. ' +
         'This browser does not support contentEditable.';
