@@ -135,10 +135,10 @@ function syncText() {
     input.focus();
     input.setSelectionRange(expr.length, expr.length);
 
-    // Always put back the focus on the proxy input
-    input.onblur = function () {
+    // Clicking on the display gives back the focus
+    document.getElementById('display').onclick = function () {
         window.setTimeout(function () {
-            document.getElementById('expr').focus();
+            input.focus();
         }, 0);
     };
 
@@ -165,6 +165,9 @@ function syncText() {
     window.setInterval(function () {
         var opacity = cursorStyle.style.opacity;
         opacity = 1 - opacity;
+        if (document.activeElement !== input) {
+            opacity = 0;
+        }
         cursorStyle.style.opacity = opacity;
     }, 400);
 })();
