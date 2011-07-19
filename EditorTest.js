@@ -51,7 +51,7 @@ function syncText() {
 
     var input, display, expr,
         lexer, tokens, token, i, j,
-        text, html, str;
+        text, html, str, el;
 
     input = document.getElementById('expr');
     expr = input.value;
@@ -119,7 +119,12 @@ function syncText() {
         html += '<span class="blank">&nbsp;</span>';
     }
 
-    html += '<span class="cursor" id="cursor">&nbsp;</span>';
+    el = document.getElementById('cursor');
+    if (el) {
+        html += el.outerHTML;
+    } else {
+        html += '<span class="cursor" id="cursor">&nbsp;</span>';
+    }
     display.innerHTML = html;
 
     syncCursor();
@@ -149,5 +154,13 @@ function syncText() {
     input.onkeyup = syncText;
 
     syncText();
+
+    window.setInterval(function () {
+        var el = document.getElementById('cursor'),
+            cls = el.getAttribute('class');
+
+        cls = (cls === 'cursor') ? 'blank' : 'cursor';
+        el.setAttribute('class', cls);
+    }, 600);
 })();
 
