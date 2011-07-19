@@ -26,7 +26,7 @@
 */
 
 /*global TapDigit:true,document:true,window:true */
-var lexer;
+var lexer, cursorStyle;
 
 function syncCursor() {
     var input, display, cursor, caretX, caretY, el;
@@ -119,12 +119,7 @@ function syncText() {
         html += '<span class="blank">&nbsp;</span>';
     }
 
-    el = document.getElementById('cursor');
-    if (el) {
-        html += el.outerHTML;
-    } else {
-        html += '<span class="cursor" id="cursor">&nbsp;</span>';
-    }
+    html += '<span class="cursor" id="cursor">&nbsp;</span>';
     display.innerHTML = html;
 
     syncCursor();
@@ -134,7 +129,8 @@ function syncText() {
 // Initialization
 (function() {
     var input = document.getElementById('expr'),
-        expr = input.value;
+        expr = input.value,
+        rules, rule, i, j;
 
     input.focus();
     input.setSelectionRange(expr.length, expr.length);
@@ -146,6 +142,17 @@ function syncText() {
         }, 0);
     };
 
+    for (i = 0; i < document.styleSheets.length; i += 1) {
+        rules = document.styleSheets[i].cssRules;
+        for (j = 0; j < rules.length; j += 1) {
+            rule = rules[j];
+            if (rule.selectorText.match(/span\.cursor/)) {
+                cursorStyle = rule;
+                break;
+            }
+        }
+    }
+
     window.addEventListener('keydown', syncCursor);
     window.addEventListener('keyup', syncText);
 
@@ -156,11 +163,9 @@ function syncText() {
     syncText();
 
     window.setInterval(function () {
-        var el = document.getElementById('cursor'),
-            cls = el.getAttribute('class');
-
-        cls = (cls === 'cursor') ? 'blank' : 'cursor';
-        el.setAttribute('class', cls);
-    }, 600);
+        var opacity = cursorStyle.style.opacity;
+        opacity = 1 - opacity;
+        cursorStyle.style.opacity = opacity;
+    }, 400);
 })();
 
