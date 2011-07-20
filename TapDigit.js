@@ -525,8 +525,10 @@ TapDigit.Editor = function (element) {
             el = editor.childNodes[start];
             if (el) {
                 cls = el.getAttribute('class');
-                cls += ' selected';
-                el.setAttribute('class', cls);
+                if (cls !== null) {
+                    cls += ' selected';
+                    el.setAttribute('class', cls);
+                }
             }
             start += 1;
         }
@@ -609,7 +611,7 @@ TapDigit.Editor = function (element) {
         el = editor.firstChild;
         while (el) {
             cls = el.getAttribute('class');
-            if (cls.match('selected')) {
+            if (cls && cls.match('selected')) {
                 cls = cls.replace('selected', '');
                 el.setAttribute('class', cls);
             }
