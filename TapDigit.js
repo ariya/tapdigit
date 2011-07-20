@@ -662,6 +662,14 @@ TapDigit.Editor = function (element) {
         focus();
     }
 
+    function setHandler(el, event, handler) {
+        if (el.addEventListener) {
+            el.addEventListener(event, handler, false);
+        } else {
+            el.attachEvent('on' + event, handler);
+        }
+    }
+
     function setupDOM(element) {
         var container, wrapper;
 
@@ -693,11 +701,11 @@ TapDigit.Editor = function (element) {
         element.appendChild(wrapper);
 
         // Wire all event handlers
-        input.addEventListener('keydown', onInputKeyDown, false);
-        input.addEventListener('keyup', onInputKeyUp, false);
-        input.addEventListener('blur', onInputBlur, false);
-        input.addEventListener('focus', onInputFocus, false);
-        editor.addEventListener('mousedown', onEditorMouseDown, false);
+        setHandler(input, 'keydown', onInputKeyDown);
+        setHandler(input, 'keyup', onInputKeyUp);
+        setHandler(input, 'blur', onInputBlur);
+        setHandler(input, 'focus', onInputFocus);
+        setHandler(editor, 'mousedown', onEditorMouseDown);
     }
 
     hasFocus = false;
