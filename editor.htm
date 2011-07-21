@@ -11,46 +11,46 @@ body {
     text-shadow: white 0px 1px 1px;
 }
 
-.editor {
+#expression {
+    background-color: #fff;
     width: 95%;
     font-family: monospace;
     font-size: 1.3em;
     border: 1px solid #bbb;
     border-radius: 0.5em;
-    padding: 0.2em 0.3em 0.2em 0.4em;
     margin: 0;
-    background-color: white;
     text-shadow: none;
-    white-space: pre-wrap
+    padding: 0.2em 0.3em 0.2em 0.4em;
+    white-space: pre-wrap;
 }
 
-.editor span.Number {
+span.Number {
     color: green;
 }
 
-.editor span.Identifier {
+span.Identifier {
     color: blue;
 }
 
-.editor span.Operator {
+span.Operator {
     color: #333;
 }
 
-.editor span.blank {
+span.blank {
     color: #555;
 }
 
-.editor span.cursor {
+span.cursor {
     border-left: 1px solid #333;
     position: absolute;
     opacity: 1;
 }
 
-.editor span.error {
+span.error {
     color: red;
 }
 
-.editor span.selected {
+span.selected {
     background-color: Highlight !important;
     color: HighlightText !important;
 }
@@ -68,7 +68,7 @@ body {
 
     <p>Syntax highlighted expression editor:</p>
 
-    <div id="editor"></div>
+    <div id="expression"></div>
 
     <p class="footer">Supported tested browsers: Firefox&nbsp;4+,
     Safari&nbsp;5+, Chrome&nbsp;9+, Opera&nbsp;11+, Konqueror&nbsp;4.6+.<br>
@@ -76,7 +76,7 @@ body {
 
     <script src="TapDigit.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        var editor = new TapDigit.Editor(document.getElementById('editor'));
+        var editor = new TapDigit.Editor(document.getElementById('expression'));
         editor.focus();
     </script>
 
