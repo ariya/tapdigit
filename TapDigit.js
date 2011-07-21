@@ -583,7 +583,7 @@ TapDigit.Editor = function (element) {
                 html += '<span class="error">' + expr.charAt(i) + '</span>';
             }
         } finally {
-            html += '<span class="cursor" id="cursor">&nbsp;</span>';
+            html += '<span class="cursor" id="cursor">\u00A0</span>';
             if (html !== editor.innerHTML) {
                 editor.innerHTML = html;
                 cursor = document.getElementById('cursor');
