@@ -505,7 +505,7 @@ TapDigit.Editor = function (element) {
         start = input.selectionStart;
         end = input.selectionEnd;
 
-        if (editor.childElementCount <= start) {
+        if (editor.childNodes.length <= start) {
             return;
         }
 
@@ -647,7 +647,7 @@ TapDigit.Editor = function (element) {
 
         x = event.clientX;
         y = event.clientY;
-        for (i = 0; i < editor.childElementCount; i += 1) {
+        for (i = 0; i < editor.childNodes.length; i += 1) {
             el = editor.childNodes[i];
             x1 = el.offsetLeft;
             x2 = x1 + el.offsetWidth;
