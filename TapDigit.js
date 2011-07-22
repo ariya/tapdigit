@@ -619,6 +619,22 @@ TapDigit.Editor = function (element) {
         }
     }
 
+    function setHandler(el, event, handler) {
+        if (el.addEventListener) {
+            el.addEventListener(event, handler, false);
+        } else {
+            el.attachEvent('on' + event, handler);
+        }
+    }
+
+    function resetHandler(el, event, handler) {
+        if (el.removeEventListener) {
+            el.removeEventListener(event, handler, false);
+        } else {
+            el.detachEvent('on' + event, handler);
+        }
+    }
+
     function onInputKeyDown(event) {
         updateCursor();
     }
@@ -661,15 +677,39 @@ TapDigit.Editor = function (element) {
             }
         }
 
-        focus();
-    }
-
-    function setHandler(el, event, handler) {
-        if (el.addEventListener) {
-            el.addEventListener(event, handler, false);
-        } else {
-            el.attachEvent('on' + event, handler);
+        function onDocumentMouseMove(event) {
+            if (event.target && event.target.parentNode === editor) {
+                for (i = 0; i < editor.childNodes.length; i += 1) {
+                    el = editor.childNodes[i];
+                    if (el === event.target) {
+                        input.selectionEnd = i;
+                        blinkCursor();
+                        updateCursor();
+                        break;
+                    }
+                }
+            }
+            if (event.preventDefault) {
+                event.preventDefault();
+            }
+            event.returnValue = false;
         }
+
+        function onDocumentMouseUp(event) {
+            if (event.preventDefault) {
+                event.preventDefault();
+            }
+            event.returnValue = false;
+            window.setTimeout(function() {
+                resetHandler(document, 'mousemove', onDocumentMouseMove);
+                resetHandler(document, 'mouseup', onDocumentMouseUp);
+            }, 100);
+        }
+
+        focus();
+        setHandler(document, 'mousemove', onDocumentMouseMove);
+        setHandler(document, 'mouseup', onDocumentMouseUp);
+        event.preventDefault();
     }
 
     function setupDOM(element) {
