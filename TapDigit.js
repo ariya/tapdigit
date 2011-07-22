@@ -492,7 +492,7 @@ TapDigit.Editor = function (element) {
 
     // Get cursor position from the proxy input and adjust the editor
     function updateCursor() {
-        var start, end, x, y, el, cls;
+        var start, end, x, y, i, el, cls;
 
         if (typeof cursor === 'undefined') {
             return;
@@ -520,17 +520,20 @@ TapDigit.Editor = function (element) {
 
         // If there is a selection, add the CSS class 'selected'
         // to all nodes inside the selection range.
-        while (start < end) {
+        if (start !== end) {
             cursor.style.opacity = 0;
-            el = editor.childNodes[start];
-            if (el) {
+            for (i = 0; i < editor.childNodes.length; i += 1) {
+                el = editor.childNodes[i];
                 cls = el.getAttribute('class');
                 if (cls !== null) {
-                    cls += ' selected';
+                    if (i >= start && i < end) {
+                        cls += ' selected';
+                    } else {
+                        cls = cls.replace('selected', '');
+                    }
                     el.setAttribute('class', cls);
                 }
             }
-            start += 1;
         }
     }
 
