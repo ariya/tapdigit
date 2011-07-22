@@ -504,6 +504,10 @@ TapDigit.Editor = function (element) {
 
         start = input.selectionStart;
         end = input.selectionEnd;
+        if (start > end) {
+            end = input.selectionStart;
+            start = input.selectionEnd;
+        }
 
         if (editor.childNodes.length <= start) {
             return;
@@ -520,19 +524,16 @@ TapDigit.Editor = function (element) {
 
         // If there is a selection, add the CSS class 'selected'
         // to all nodes inside the selection range.
-        if (start !== end) {
-            cursor.style.opacity = 0;
-            for (i = 0; i < editor.childNodes.length; i += 1) {
-                el = editor.childNodes[i];
-                cls = el.getAttribute('class');
-                if (cls !== null) {
-                    if (i >= start && i < end) {
-                        cls += ' selected';
-                    } else {
-                        cls = cls.replace('selected', '');
-                    }
-                    el.setAttribute('class', cls);
+        cursor.style.opacity = (start === end) ? 1 : 0;
+        for (i = 0; i < editor.childNodes.length; i += 1) {
+            el = editor.childNodes[i];
+            cls = el.getAttribute('class');
+            if (cls !== null) {
+                cls = cls.replace(' selected', '');
+                if (i >= start && i < end) {
+                    cls += ' selected';
                 }
+                el.setAttribute('class', cls);
             }
         }
     }
@@ -656,13 +657,9 @@ TapDigit.Editor = function (element) {
     }
 
     function onEditorMouseDown(event) {
-        var x, y, i, el, x1, y1, x2, y2;
+        var x, y, i, el, x1, y1, x2, y2, anchor;
 
         deselect();
-
-        // Assume first that it is at the end
-        input.selectionStart = input.value.length;
-        input.selectionEnd = input.selectionStart;
 
         x = event.clientX;
         y = event.clientY;
@@ -675,17 +672,27 @@ TapDigit.Editor = function (element) {
             if (x1 <= x && x < x2 && y1 <= y && y < y2) {
                 input.selectionStart = i;
                 input.selectionEnd = i;
+                anchor = i;
                 blinkCursor();
                 break;
             }
         }
 
+        // no match, then assume it is at the end
+        if (i >= editor.childNodes.length) {
+            input.selectionStart = input.value.length;
+            input.selectionEnd = input.selectionStart;
+            anchor = input.value.length;
+        }
+
         function onDocumentMouseMove(event) {
+            var i;
             if (event.target && event.target.parentNode === editor) {
                 for (i = 0; i < editor.childNodes.length; i += 1) {
                     el = editor.childNodes[i];
-                    if (el === event.target) {
-                        input.selectionEnd = i;
+                    if (el === event.target && el !== cursor) {
+                        input.selectionStart = Math.min(i, anchor);
+                        input.selectionEnd = Math.max(i, anchor);
                         blinkCursor();
                         updateCursor();
                         break;
