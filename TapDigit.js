@@ -172,12 +172,12 @@ TapDigit.Lexer = function () {
                 if (index >= length) {
                     ch = '<end>';
                 }
-                throw SyntaxError('Unexpected ' + ch + ' after the exponent sign');
+                throw new SyntaxError('Unexpected ' + ch + ' after the exponent sign');
             }
         }
 
         if (number === '.') {
-            throw SyntaxError('Expecting decimal digits after the dot sign');
+            throw new SyntaxError('Expecting decimal digits after the dot sign');
         }
 
         return createToken(T.Number, number);
@@ -215,7 +215,7 @@ TapDigit.Lexer = function () {
         }
 
 
-        throw SyntaxError('Unknown token from character ' + peekNextChar());
+        throw new SyntaxError('Unknown token from character ' + peekNextChar());
     }
 
     function peek() {
@@ -281,7 +281,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (!matchOp(token, '(')) {
-            throw SyntaxError('Expecting ( in a function call "' + name + '"');
+            throw new SyntaxError('Expecting ( in a function call "' + name + '"');
         }
 
         token = lexer.peek();
@@ -291,7 +291,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (!matchOp(token, ')')) {
-            throw SyntaxError('Expecting ) in a function call "' + name + '"');
+            throw new SyntaxError('Expecting ) in a function call "' + name + '"');
         }
 
         return {
@@ -312,7 +312,7 @@ TapDigit.Parser = function () {
         token = lexer.peek();
 
         if (typeof token === 'undefined') {
-            throw SyntaxError('Unexpected termination of expression');
+            throw new SyntaxError('Unexpected termination of expression');
         }
 
         if (token.type === T.Identifier) {
@@ -338,14 +338,14 @@ TapDigit.Parser = function () {
             expr = parseAssignment();
             token = lexer.next();
             if (!matchOp(token, ')')) {
-                throw SyntaxError('Expecting )');
+                throw new SyntaxError('Expecting )');
             }
             return {
                 'Expression': expr
             };
         }
 
-        throw SyntaxError('Parse error, can not process token ' + token.value);
+        throw new SyntaxError('Parse error, can not process token ' + token.value);
     }
 
     // Unary ::= Primary |
@@ -454,7 +454,7 @@ TapDigit.Parser = function () {
 
         token = lexer.next();
         if (typeof token !== 'undefined') {
-            throw SyntaxError('Unexpected token ' + token.value);
+            throw new SyntaxError('Unexpected token ' + token.value);
         }
 
         return {
@@ -798,7 +798,7 @@ TapDigit.Editor = function (element) {
                 event.preventDefault();
             }
             event.returnValue = false;
-            window.setTimeout(function() {
+            window.setTimeout(function () {
                 resetHandler(document, 'mousemove', onDocumentMouseMove);
                 resetHandler(document, 'mouseup', onDocumentMouseUp);
             }, 100);
