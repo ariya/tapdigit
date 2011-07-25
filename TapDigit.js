@@ -469,15 +469,32 @@ TapDigit.Parser = function () {
 };
 
 TapDigit.Context = function () {
-    var Constants;
+    var Constants, Functions;
 
     Constants = {
         pi: 3.1415926535897932384,
         phi: 1.6180339887498948482
     };
 
+    Functions = {
+        abs: Math.abs,
+        acos: Math.acos,
+        asin: Math.asin,
+        atan: Math.atan,
+        ceil: Math.ceil,
+        cos: Math.cos,
+        exp: Math.exp,
+        floor: Math.floor,
+        ln: Math.ln,
+        random: Math.random,
+        sin: Math.sin,
+        sqrt: Math.sqrt,
+        tan: Math.tan
+    };
+
     return {
-        Constants: Constants
+        Constants: Constants,
+        Functions: Functions
     };
 };
 
@@ -487,7 +504,7 @@ TapDigit.Evaluator = function (ctx) {
         context = (arguments.length < 1) ? new TapDigit.Context() : ctx;
 
     function exec(node) {
-        var left, right, expr;
+        var left, right, expr, args, i;
 
         if (node.hasOwnProperty('Expression')) {
             return exec(node.Expression);
@@ -541,7 +558,17 @@ TapDigit.Evaluator = function (ctx) {
             return exec(node.Assignment.value);
         }
 
-        // TODO: handle function call
+        if (node.hasOwnProperty('Function')) {
+            expr = node.Function;
+            if (context.Functions.hasOwnProperty(expr.name)) {
+                args = [];
+                for (i = 0; i < expr.args.length; i += 1) {
+                    args.push(exec(expr.args[i]));
+                }
+                return context.Functions[expr.name].apply(null, args);
+            }
+            throw new SyntaxError('Unknown function ' + expr.name);
+        }
 
         throw new SyntaxError('Unknown syntax node');
     }
