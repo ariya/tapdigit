@@ -296,7 +296,7 @@ TapDigit.Parser = function () {
         }
 
         return {
-            'Function' : {
+            'FunctionCall' : {
                 'name': name,
                 'args': args
             }
@@ -558,8 +558,8 @@ TapDigit.Evaluator = function (ctx) {
             return exec(node.Assignment.value);
         }
 
-        if (node.hasOwnProperty('Function')) {
-            expr = node.Function;
+        if (node.hasOwnProperty('FunctionCall')) {
+            expr = node.FunctionCall;
             if (context.Functions.hasOwnProperty(expr.name)) {
                 args = [];
                 for (i = 0; i < expr.args.length; i += 1) {
