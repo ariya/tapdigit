@@ -431,12 +431,7 @@ TapDigit.Parser = function () {
                     }
                 };
             }
-            return {
-                'Assignment': {
-                    name: expr,
-                    value: undefined
-                }
-            };
+            return expr;
         }
 
         return expr;
