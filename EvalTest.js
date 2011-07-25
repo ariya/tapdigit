@@ -38,7 +38,6 @@ function parse() {
 
         el = document.getElementById('result')
         expr = document.getElementById('code').value;
-        console.log(code);
         try {
             if (typeof evaluator === 'undefined') {
                 evaluator = new TapDigit.Evaluator();
