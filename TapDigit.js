@@ -26,6 +26,7 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*jslint sloppy: true */
 /*global document:true,window:true */
 var TapDigit;
 TapDigit = TapDigit || {};
