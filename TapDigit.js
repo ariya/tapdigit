@@ -467,9 +467,23 @@ TapDigit.Parser = function () {
     };
 };
 
-TapDigit.Evaluator = function () {
+TapDigit.Context = function () {
+    var Constants;
 
-    var parser = new TapDigit.Parser();
+    Constants = {
+        pi: 3.1415926535897932384,
+        phi: 1.6180339887498948482
+    };
+
+    return {
+        Constants: Constants
+    };
+};
+
+TapDigit.Evaluator = function (ctx) {
+
+    var parser = new TapDigit.Parser(),
+        context = (arguments.length < 1) ? new TapDigit.Context() : ctx;
 
     function exec(node) {
         var left, right, expr;
@@ -511,6 +525,14 @@ TapDigit.Evaluator = function () {
             default:
                 throw new SyntaxError('Unknown operator ' + node.operator);
             }
+        }
+
+        if (node.hasOwnProperty('Identifier')) {
+            if (context.Constants.hasOwnProperty(node.Identifier)) {
+                return context.Constants[node.Identifier];
+            }
+            // TODO: handle variables
+            throw new SyntaxError('Unknown identifier');
         }
 
         // TODO: assign to variable in the context
