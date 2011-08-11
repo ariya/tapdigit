@@ -136,13 +136,16 @@ TapDigit.Lexer = function () {
             return undefined;
         }
 
-        number = getNextChar();
-        while (true) {
-            ch = peekNextChar();
-            if (!isDecimalDigit(ch)) {
-                break;
+        number = '';
+        if (ch !== '.') {
+            number = getNextChar();
+            while (true) {
+                ch = peekNextChar();
+                if (!isDecimalDigit(ch)) {
+                    break;
+                }
+                number += getNextChar();
             }
-            number += getNextChar();
         }
 
         if (ch === '.') {
