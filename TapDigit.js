@@ -492,7 +492,8 @@ TapDigit.Context = function () {
 
     return {
         Constants: Constants,
-        Functions: Functions
+        Functions: Functions,
+        Variables: {}
     };
 };
 
@@ -547,13 +548,16 @@ TapDigit.Evaluator = function (ctx) {
             if (context.Constants.hasOwnProperty(node.Identifier)) {
                 return context.Constants[node.Identifier];
             }
-            // TODO: handle variables
+            if (context.Variables.hasOwnProperty(node.Identifier)) {
+                return context.Variables[node.Identifier];
+            }
             throw new SyntaxError('Unknown identifier');
         }
 
-        // TODO: assign to variable in the context
         if (node.hasOwnProperty('Assignment')) {
-            return exec(node.Assignment.value);
+            right = exec(node.Assignment.value);
+            context.Variables[node.Assignment.name.Identifier] = right;
+            return right;
         }
 
         if (node.hasOwnProperty('FunctionCall')) {
