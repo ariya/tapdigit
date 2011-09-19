@@ -837,7 +837,10 @@ TapDigit.Editor = function (element) {
         focus();
         setHandler(document, 'mousemove', onDocumentMouseMove);
         setHandler(document, 'mouseup', onDocumentMouseUp);
-        event.preventDefault();
+        if (event.preventDefault) {
+            event.preventDefault();
+        }
+        event.returnValue = false;
     }
 
     function setupDOM(element) {
