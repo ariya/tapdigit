@@ -376,44 +376,44 @@ TapDigit.Parser = function () {
     //                    Multiplicative '*' Unary |
     //                    Multiplicative '/' Unary
     function parseMultiplicative() {
-        var token, left, right;
+        var expr, token;
 
-        left = parseUnary();
+        expr = parseUnary();
         token = lexer.peek();
-        if (matchOp(token, '*') || matchOp(token, '/')) {
+        while (matchOp(token, '*') || matchOp(token, '/')) {
             token = lexer.next();
-            right = parseMultiplicative();
-            return {
+            expr = {
                 'Binary': {
                     operator: token.value,
-                    left: left,
-                    right: right
+                    left: expr,
+                    right: parseUnary()
                 }
             };
+            token = lexer.peek();
         }
-        return left;
+        return expr;
     }
 
     // Additive ::= Multiplicative |
     //              Additive '+' Multiplicative |
     //              Additive '-' Multiplicative
     function parseAdditive() {
-        var token, left, right;
+        var expr, token;
 
-        left = parseMultiplicative();
+        expr = parseMultiplicative();
         token = lexer.peek();
-        if (matchOp(token, '+') || matchOp(token, '-')) {
+        while (matchOp(token, '+') || matchOp(token, '-')) {
             token = lexer.next();
-            right = parseAdditive();
-            return {
+            expr = {
                 'Binary': {
                     operator: token.value,
-                    left: left,
-                    right: right
+                    left: expr,
+                    right: parseMultiplicative()
                 }
             };
+            token = lexer.peek();
         }
-        return left;
+        return expr;
     }
 
     // Assignment ::= Identifier '=' Assignment |
